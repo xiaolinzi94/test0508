@@ -1,0 +1,153 @@
+C51 COMPILER V9.01   LED                                                                   05/10/2023 11:09:59 PAGE 1   
+
+
+C51 COMPILER V9.01, COMPILATION OF MODULE LED
+OBJECT MODULE PLACED IN led.OBJ
+COMPILER INVOKED BY: E:\zll\software\keilc51\C51\BIN\C51.EXE led.c BROWSE DEBUG OBJECTEXTEND
+
+line level    source
+
+   1          #include<reg52.h>                         //包含特殊功能寄存器定义的头文件
+   2          sbit LED0=P2^0;                          //位地址声明
+   3          sbit LED1=P2^1;
+   4          sbit LED2=P2^2;
+   5          sbit LED3=P2^3;
+   6          sbit LED4=P2^4;
+   7          sbit LED5=P2^5;
+   8          sbit LED6=P2^6;
+   9          sbit LED7=P2^7;
+  10          #define NIXIE_PORT P0
+  11          #define LED_PORT P2
+  12          
+  13          void LampFalshing(void);
+  14          void GroupLampFalshing(void);
+  15          void FlowingWaterLamp(void);
+  16          void delay(int temptime);
+  17          void NixieLight(void);
+  18          
+  19          void main(void)
+  20          {
+  21   1      
+  22   1      
+  23   1      //以下3个功能函数均是LED亮灭 的功能，不可同时使用       
+  24   1      //      LampFalshing();                 //第一个LED小灯闪烁功能
+  25   1      //      GroupLampFalshing();    //整组LED小灯闪烁功能
+  26   1      //      FlowingWaterLamp();         //流水灯功能
+  27   1              NixieLight();      //数码管循环显示数字1~8功能
+  28   1      }       
+  29          
+  30          //第一个LED小灯闪烁功能
+  31          void LampFalshing(void)
+  32          {
+  33   1              while(1)
+  34   1              {  
+  35   2                      LED0^=1;
+  36   2                      delay(50000);
+  37   2              }
+  38   1      }
+  39          
+  40          //整组LED小灯闪烁功能
+  41          void GroupLampFalshing(void)
+  42          {
+  43   1              LED_PORT =0x0;
+  44   1              while(1)
+  45   1              {  
+  46   2                      LED_PORT=~LED_PORT;
+  47   2                      delay(50000);
+  48   2              }
+  49   1      }
+  50          
+  51          //流水灯功能
+  52          void FlowingWaterLamp(void)
+  53          {
+  54   1              int i=0;
+  55   1              LED_PORT =~0x01;
+C51 COMPILER V9.01   LED                                                                   05/10/2023 11:09:59 PAGE 2   
+
+  56   1              while(1)
+  57   1              {  //使用位移+循环实现流水灯
+  58   2                      for(i=0;i<8;i++)
+  59   2                      {
+  60   3                              LED_PORT =~(0x01<<i);
+  61   3                              delay(50000);
+  62   3                      }
+  63   2              }
+  64   1      }
+  65          
+  66          
+  67          //数码管循环显示数字1~8功能
+  68          void NixieLight(void)
+  69          {       
+  70   1              int arrNixie[10]={0x3F,0x6,0x5B,0x4F,0x66,0x6D,0x7D,0x7,0x7F,0x80};      //显示数字0~8，点·
+  71   1              int i,j=0;
+  72   1      #if 0
+              //方法一，不足点：只需控制P2^2,P2^3,P2^4 3个引脚即可，实际控制了P2整组8个引脚才实现效果
+                      while(1)
+                      {  
+                              LED_PORT =0x20;         //38译码器3个输入引脚 CBA为111时，输出引脚Y7=0，即LED_PORT最大为0x1C,初始值设为0x1C+4; 
+             - CBA为110时，输出引脚Y6=0，即LED_PORT为0x1C-4;
+                              for (j=0;j<8;j++)
+                              {
+                                      LED_PORT =LED_PORT-0x4;
+                                      delay(50000);
+              
+                                      for (i=0;i<10;i++)
+                                      {
+                      
+                                              NIXIE_PORT =arrNixie[i];
+                                              delay(50000);
+                                      }
+                                      NIXIE_PORT =0x0;   //清除上次for循环的数组最后一位值 数码管db位
+                              }       
+                      }
+              #endif
+  92   1      //方法二 控制P2^2,P2^3,P2^4 3个引脚即可实现效果
+  93   1              while(1)
+  94   1              {  
+  95   2                      for (j=0;j<8;j++)
+  96   2                      {
+  97   3                              switch(j)
+  98   3                              {
+  99   4                               case 0:LED4=1;LED3=1;LED2=1;break;              //Y7亮
+ 100   4                               case 1:LED4=1;LED3=1;LED2=0;break;              //Y6亮
+ 101   4                               case 2:LED4=1;LED3=0;LED2=1;break;              //Y5亮
+ 102   4                               case 3:LED4=1;LED3=0;LED2=0;break;              //Y4亮
+ 103   4                               case 4:LED4=0;LED3=1;LED2=1;break;              //Y3亮
+ 104   4                               case 5:LED4=0;LED3=1;LED2=0;break;              //Y2亮
+ 105   4                               case 6:LED4=0;LED3=0;LED2=1;break;              //Y1亮
+ 106   4                               case 7:LED4=0;LED3=0;LED2=0;break;              //Y0亮
+ 107   4                              }
+ 108   3                              for (i=0;i<10;i++)
+ 109   3                              {
+ 110   4              
+ 111   4                                      NIXIE_PORT =arrNixie[i];
+ 112   4                                      delay(50000);
+ 113   4                              }
+ 114   3                              NIXIE_PORT =0x0;   //清除上次for循环的数组最后一位值 数码管db位
+ 115   3                      }       
+ 116   2              }
+C51 COMPILER V9.01   LED                                                                   05/10/2023 11:09:59 PAGE 3   
+
+ 117   1      }
+ 118          
+ 119                   
+ 120          //延时函数
+ 121          void delay(int temptime)
+ 122          {
+ 123   1              while(temptime--);
+ 124   1      }
+ 125                                                          
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    275    ----
+   CONSTANT SIZE    =     20    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      26
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)
