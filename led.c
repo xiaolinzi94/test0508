@@ -18,14 +18,14 @@ void NixieLight(void);
 
 void main(void)
 {
-//以下3个功能函数均是LED亮灭 的功能，不可同时使用	
+// 以下3个功能函数均是LED亮灭 的功能，不可同时使用	
 //	LampFalshing();			//第一个LED小灯闪烁功能
 //	GroupLampFalshing();	//整组LED小灯闪烁功能
 //	FlowingWaterLamp();	    //流水灯功能
 	NixieLight();	   //数码管循环显示数字1~8功能
 }	
 
-//第一个LED小灯闪烁功能
+// 第一个LED小灯闪烁功能
 void LampFalshing(void)
 {
 	while(1)
@@ -35,7 +35,7 @@ void LampFalshing(void)
 	}
 }
 
-//整组LED小灯闪烁功能
+// 整组LED小灯闪烁功能
 void GroupLampFalshing(void)
 {
 	LED_PORT =0x0;
@@ -46,7 +46,7 @@ void GroupLampFalshing(void)
 	}
 }
 
-//流水灯功能
+// 流水灯功能
 void FlowingWaterLamp(void)
 {
  	int i=0;
@@ -62,13 +62,13 @@ void FlowingWaterLamp(void)
 }
 
 
-//数码管循环显示数字1~8功能
+// 数码管循环显示数字1~8功能
 void NixieLight(void)
 {	
 	int arrNixie[10]={0x3F,0x6,0x5B,0x4F,0x66,0x6D,0x7D,0x7,0x7F,0x80};	 //显示数字0~8，点·
  	int i,j=0;
 #if 0
-//方法一，不足点：只需控制P2^2,P2^3,P2^4 3个引脚即可，实际控制了P2整组8个引脚才实现效果
+// 方法一，不足点：只需控制P2^2,P2^3,P2^4 3个引脚即可，实际控制了P2整组8个引脚才实现效果
 	while(1)
 	{  
 		LED_PORT =0x20;		//38译码器3个输入引脚 CBA为111时，输出引脚Y7=0，即LED_PORT最大为0x1C,初始值设为0x1C+4;  CBA为110时，输出引脚Y6=0，即LED_PORT为0x1C-4;
@@ -115,7 +115,7 @@ void NixieLight(void)
 }
 
 	 
-//延时函数
+// 延时函数 nice
 void delay(int temptime)
 {
 	while(temptime--);
